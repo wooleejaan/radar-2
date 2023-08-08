@@ -1,3 +1,5 @@
+import Radar from "@/components/radar/radar";
+
 export default function Home() {
-  return <div>홈페이지</div>;
+  return <Radar />;
 }
