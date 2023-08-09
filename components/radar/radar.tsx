@@ -18,11 +18,11 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
     const drawRadarChart = () => {
       const cfg = {
         radius: 5,
-        w: 600,
-        h: 600,
+        w: 400,
+        h: 400,
         factor: 1,
         factorLegend: 0.85,
-        levels: 3,
+        levels: 4,
         maxValue: 0,
         radians: 2 * Math.PI,
         opacityArea: 0.5,
@@ -42,7 +42,9 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
         .append("svg")
         .attr("width", cfg.w)
         .attr("height", cfg.h)
-        .append("g");
+        .append("g")
+        // .attr("transform", `translate(${cfg.w / 2}, ${cfg.h / 2 + 20})`); // 전체 그래프 위치 조정
+        .attr("transform", `translate(0, 30)`); // 전체 그래프 위치 조정
 
       const tooltip = svg
         .append("text")
@@ -94,7 +96,7 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
                 (1 - cfg.factor * Math.cos(((i + 1) * cfg.radians) / total))
             )
             .attr("class", "line")
-            .style("stroke", "grey")
+            .style("stroke", "grey") // frame storke 색상 수정
             .style("stroke-width", "0.5px")
             .attr(
               "transform",
@@ -113,6 +115,7 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .append("g")
           .attr("class", "axis");
 
+        // 도형의 각 라인
         axis
           .append("line")
           .attr("x1", cfg.w / 2)
@@ -136,13 +139,16 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .style("stroke", "grey")
           .style("stroke-width", "1px");
 
+        // 꼭짓점 텍스트
         axis
           .append("text")
           .attr("class", "legend")
           .text((d) => d)
           .style("font-family", "sans-serif")
-          .style("font-size", "10px")
-          .attr("transform", (d, i) => "translate(0, -10)")
+          .style("font-weight", "700")
+          .style("font-size", "16px")
+          .style("fill", "black")
+          .attr("transform", (d, i) => "translate(-20, 10)")
           .attr(
             "x",
             (d, i) =>
@@ -186,6 +192,7 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .attr("class", "radar-chart-serie0")
           .style("stroke-width", "2px")
           .style("stroke", cfg.color("0"))
+          .style("stroke", "blue") // polygon stroke color 수정
           .on("mouseover", function (this: any) {
             const z = `polygon.${d3.select(this).attr("class")}`;
             svg
@@ -201,7 +208,8 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
               .style("fill-opacity", cfg.opacityArea);
           })
           .style("fill", () => cfg.color("0"))
-          .style("fill-opacity", cfg.opacityArea);
+          .style("fill-opacity", cfg.opacityArea)
+          .style("fill", "blue"); // polygon 색상 변경
       }
 
       function drawPoly() {
@@ -305,6 +313,8 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           const ratio = newX / oldX;
           newValue = ratio * oldData.value;
         }
+
+        // console.log(newY, newX, newValue);
 
         dragTarget.attr("cx", () => newX + 300).attr("cy", () => 300 - newY);
         data[oldData.order].value = newValue;
