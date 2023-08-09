@@ -18,8 +18,8 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
     const drawRadarChart = () => {
       const cfg = {
         radius: 5,
-        w: 400,
-        h: 400,
+        w: 600,
+        h: 600,
         factor: 1,
         factorLegend: 0.85,
         levels: 4,
