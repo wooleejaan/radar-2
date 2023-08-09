@@ -15,7 +15,13 @@ interface MyRadarChartProps {
 
 const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
   useEffect(() => {
-    const drawRadarChart = () => {
+    const drawRadarChart = (
+      elementId: string,
+      lineClassName: string,
+      axisClassName: string,
+      legendClassName: string,
+      radarClassName: string
+    ) => {
       const cfg = {
         radius: 5,
         w: 600,
@@ -35,10 +41,12 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
       const total = allAxis.length;
       const radius = cfg.factor * Math.min(cfg.w / 2, cfg.h / 2);
 
-      d3.select("#chart").select("svg").remove();
+      // d3.select("#chart").select("svg").remove();
+      d3.select(elementId).select("svg").remove();
 
       const svg = d3
-        .select("#chart")
+        // .select("#chart")
+        .select(elementId)
         .append("svg")
         .attr("width", cfg.w)
         .attr("height", cfg.h)
@@ -95,7 +103,8 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
                 levelFactor *
                 (1 - cfg.factor * Math.cos(((i + 1) * cfg.radians) / total))
             )
-            .attr("class", "line")
+            // .attr("class", "line")
+            .attr("class", lineClassName)
             .style("stroke", "grey") // frame storke 색상 수정
             .style("stroke-width", "0.5px")
             .attr(
@@ -113,7 +122,8 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .data(allAxis)
           .enter()
           .append("g")
-          .attr("class", "axis");
+          // .attr("class", "axis");
+          .attr("class", axisClassName);
 
         // 도형의 각 라인
         axis
@@ -135,14 +145,16 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
               (1 - cfg.factor * Math.cos((i * cfg.radians) / total));
             return maxAxisValues[i].y;
           })
-          .attr("class", "line")
+          // .attr("class", "line")
+          .attr("class", lineClassName)
           .style("stroke", "grey")
           .style("stroke-width", "1px");
 
         // 꼭짓점 텍스트
         axis
           .append("text")
-          .attr("class", "legend")
+          // .attr("class", "legend")
+          .attr("class", legendClassName)
           .text((d) => d)
           .style("font-family", "sans-serif")
           .style("font-weight", "700")
@@ -184,32 +196,35 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
       }
 
       function initPolygon() {
-        return svg
-          .selectAll("area")
-          .data([dataValues])
-          .enter()
-          .append("polygon")
-          .attr("class", "radar-chart-serie0")
-          .style("stroke-width", "2px")
-          .style("stroke", cfg.color("0"))
-          .style("stroke", "blue") // polygon stroke color 수정
-          .on("mouseover", function (this: any) {
-            const z = `polygon.${d3.select(this).attr("class")}`;
-            svg
-              .selectAll("polygon")
-              .transition("200")
-              .style("fill-opacity", 0.1);
-            svg.selectAll(z).transition("200").style("fill-opacity", 0.7);
-          })
-          .on("mouseout", function () {
-            svg
-              .selectAll("polygon")
-              .transition("200")
-              .style("fill-opacity", cfg.opacityArea);
-          })
-          .style("fill", () => cfg.color("0"))
-          .style("fill-opacity", cfg.opacityArea)
-          .style("fill", "blue"); // polygon 색상 변경
+        return (
+          svg
+            .selectAll("area")
+            .data([dataValues])
+            .enter()
+            .append("polygon")
+            .attr("class", radarClassName)
+            // .attr("class", "radar-chart-serie0")
+            .style("stroke-width", "2px")
+            .style("stroke", cfg.color("0"))
+            .style("stroke", "blue") // polygon stroke color 수정
+            .on("mouseover", function (this: any) {
+              const z = `polygon.${d3.select(this).attr("class")}`;
+              svg
+                .selectAll("polygon")
+                .transition("200")
+                .style("fill-opacity", 0.1);
+              svg.selectAll(z).transition("200").style("fill-opacity", 0.7);
+            })
+            .on("mouseout", function () {
+              svg
+                .selectAll("polygon")
+                .transition("200")
+                .style("fill-opacity", cfg.opacityArea);
+            })
+            .style("fill", () => cfg.color("0"))
+            .style("fill-opacity", cfg.opacityArea)
+            .style("fill", "blue")
+        ); // polygon 색상 변경
       }
 
       function drawPoly() {
@@ -228,7 +243,8 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .data(data)
           .enter()
           .append("circle")
-          .attr("class", "radar-chart-serie0")
+          // .attr("class", "radar-chart-serie0")
+          .attr("class", radarClassName)
           .attr("r", cfg.radius)
           .attr("alt", (j) => Math.max(j.value, 0))
           // 점의 위치 결정 (cy, cx)
@@ -328,7 +344,13 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
       }
     };
 
-    drawRadarChart();
+    drawRadarChart(
+      "#chart",
+      "chart-line",
+      "chart-axis",
+      "chart-legend",
+      "radar-chart-series-0"
+    );
   }, [data]);
 
   return (
