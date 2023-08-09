@@ -231,6 +231,7 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .attr("class", "radar-chart-serie0")
           .attr("r", cfg.radius)
           .attr("alt", (j) => Math.max(j.value, 0))
+          // 점의 위치 결정 (cy, cx)
           .attr(
             "cx",
             (j, i) =>
@@ -253,12 +254,13 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           .style("fill", cfg.color("0"))
           .style("fill-opacity", 0.9)
           .on("mouseover", function (this: any, d) {
+            // mouseover 시 text로 뭘 보여줄지 결정
             const newX = parseFloat(d3.select(this).attr("cx")) - 10;
             const newY = parseFloat(d3.select(this).attr("cy")) - 5;
             tooltip
               .attr("x", newX)
               .attr("y", newY)
-              .text(d.value)
+              .text(d.value >> 0) // 정수값만 보여주도록 수정
               .transition("200")
               .style("opacity", 1);
             const z = `polygon.${d3.select(this).attr("class")}`;
@@ -314,7 +316,10 @@ const MyRadarChart: React.FC<MyRadarChartProps> = ({ data }) => {
           newValue = ratio * oldData.value;
         }
 
-        // console.log(newY, newX, newValue);
+        // newValue가 0보다 작아질 때 점 이동 막기
+        if (newValue <= 0) {
+          return;
+        }
 
         dragTarget.attr("cx", () => newX + 300).attr("cy", () => 300 - newY);
         data[oldData.order].value = newValue;
